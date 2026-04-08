@@ -78,7 +78,7 @@ textarea {
 .history-header h2,
 .detail-header h3 {
   margin: 0;
-  font-size: 18px;
+  font-size: 20px;
 }
 
 .split {
@@ -125,7 +125,7 @@ textarea {
 .schema-card h3,
 .table-card h3 {
   margin: 0 0 8px;
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .schema-meta {
@@ -155,7 +155,7 @@ textarea {
   border-radius: 999px;
   background: rgba(31, 36, 48, 0.06);
   color: var(--text);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -188,6 +188,7 @@ textarea {
   display: block;
   margin-bottom: 6px;
   font-weight: 700;
+  font-size: 18px;
 }
 
 .preset-sql {
@@ -195,7 +196,7 @@ textarea {
   margin: 0 0 10px;
   color: var(--muted);
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.5;
 }
 
@@ -285,20 +286,20 @@ textarea {
 .prompt-line {
   color: #8de1cf;
   font-family: var(--mono);
-  font-size: 14px;
+  font-size: 16px;
   padding-top: 8px;
 }
 
 #sql-input {
   width: 100%;
-  min-height: 210px;
+  min-height: 160px;
   resize: vertical;
   border: none;
   outline: none;
   background: transparent;
   color: #eef4ff;
   font-family: var(--mono);
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.65;
 }
 
