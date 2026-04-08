@@ -27,11 +27,6 @@ const stages = [
     summary: (trace) => trace.stages.parser.statement?.type ?? "no statement",
   },
   {
-    id: "optimizer",
-    title: "optimize_statement()",
-    summary: (trace) => trace.stages.optimizer.statement?.type ?? "not optimized",
-  },
-  {
     id: "executor",
     title: "execute_statement()",
     summary: (trace) => {
@@ -248,9 +243,9 @@ function renderStageDetail() {
     return;
   }
 
-  if (stage === "parser" || stage === "optimizer") {
+  if (stage === "parser") {
     const statement = stageData.statement;
-    elements.detailTitle.textContent = stage === "parser" ? "Parser Statement" : "Optimized Statement";
+    elements.detailTitle.textContent = "Parser Statement";
 
     if (!statement) {
       elements.detailContent.append(createElement("div", "console-entry error", trace.error?.message || "stage failed"));
