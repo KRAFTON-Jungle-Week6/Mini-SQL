@@ -6,7 +6,6 @@
 
 - `Tokenizer` 가 SQL 문자열을 토큰으로 나눕니다.
 - `Parser` 가 토큰을 AST로 바꿉니다.
-- `Optimizer` 는 AST를 직접 수정하는 작은 rewrite 단계입니다.
 - `Executor` 는 AST를 직접 해석해서 파일 기반 테이블을 읽고 씁니다.
 
 즉, 지금은 `Logical Plan` 계층 없이도 끝까지 동작하는 최소 버전입니다.
