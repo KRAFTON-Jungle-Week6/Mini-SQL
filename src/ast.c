@@ -3,6 +3,7 @@
 #include "util.h" // 여러 곳에 쓰이는 만능 메모리, 문자열 유틸리티 함수들을 끌어쓰기 위해 헤더 포함
 
 #include <stdlib.h> // 메모리의 동적 해제 관련(free) 기본 내장 함수들을 위해 포함
+#include <string.h> // memset 으로 복제용 구조체를 깔끔하게 초기화하기 위한 헤더 포함
 
 // 저장해 두었던 단일 '값(Literal)' 데이터 찌꺼기 메모리를 시스템에 비워주는 함수 구현부
 void free_literal(Literal *literal) {
@@ -32,6 +33,126 @@ static void free_column_list(ColumnList *columns) {
     sql_free_string_array(columns->items, columns->count); // 배열 내의 아이템들을 개수만큼 내부 아이템까지 통째로 날려주는 유틸 함수의 힘을 빌립니다.
     columns->items = NULL; // 내부 배열 메모리는 모두 날아갔으므로 구조체도 포인터를 상실하게 널로 초기화 해주고
     columns->count = 0;    // 아이템이 남아있지 않으므로 개수 마저 0으로 세탁, 리셋합니다.
+}
+
+// 컬럼명 목록 구조체를 통째로 깊은 복사해, 원본과 분리된 새 문자열 배열을 만들어내는 내부 보조 함수
+static int clone_column_list(const ColumnList *source, ColumnList *destination) {
+    size_t index;
+
+    if (source == NULL || destination == NULL) {
+        return 0;
+    }
+
+    destination->is_star = source->is_star;
+    destination->count = source->count;
+    destination->items = NULL;
+
+    if (source->count == 0) {
+        return 1;
+    }
+
+    destination->items = (char **)calloc(source->count, sizeof(char *));
+    if (destination->items == NULL) {
+        destination->count = 0;
+        return 0;
+    }
+
+    for (index = 0; index < source->count; ++index) {
+        destination->items[index] = sql_strdup(source->items[index]);
+        if (destination->items[index] == NULL) {
+            sql_free_string_array(destination->items, index);
+            destination->items = NULL;
+            destination->count = 0;
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+// WHERE 절도 원본과 메모리 참조가 섞이지 않도록, 컬럼명과 리터럴을 함께 복제해 주는 내부 보조 함수
+static int clone_where_clause(const WhereClause *source, WhereClause *destination) {
+    memset(destination, 0, sizeof(*destination));
+
+    destination->column_name = sql_strdup(source->column_name);
+    if (destination->column_name == NULL) {
+        return 0;
+    }
+
+    destination->value = clone_literal(&source->value);
+    if (destination->value.text == NULL) {
+        free(destination->column_name);
+        destination->column_name = NULL;
+        return 0;
+    }
+
+    return 1;
+}
+
+// SELECT, INSERT 어느 쪽이든 트레이스나 비교용으로 안전하게 보관할 수 있도록 Statement 전체를 깊은 복사합니다.
+int clone_statement(const Statement *source, Statement *destination) {
+    size_t index;
+
+    if (source == NULL || destination == NULL) {
+        return 0;
+    }
+
+    memset(destination, 0, sizeof(*destination));
+    destination->type = source->type;
+
+    if (source->type == AST_SELECT_STATEMENT) {
+        destination->as.select_stmt.table_name = sql_strdup(source->as.select_stmt.table_name);
+        if (destination->as.select_stmt.table_name == NULL) {
+            return 0;
+        }
+
+        if (!clone_column_list(&source->as.select_stmt.columns, &destination->as.select_stmt.columns)) {
+            free_statement(destination);
+            return 0;
+        }
+
+        destination->as.select_stmt.has_where = source->as.select_stmt.has_where;
+        if (source->as.select_stmt.has_where &&
+            !clone_where_clause(&source->as.select_stmt.where, &destination->as.select_stmt.where)) {
+            free_statement(destination);
+            return 0;
+        }
+
+        return 1;
+    }
+
+    destination->as.insert_stmt.table_name = sql_strdup(source->as.insert_stmt.table_name);
+    if (destination->as.insert_stmt.table_name == NULL) {
+        return 0;
+    }
+
+    if (!clone_column_list(&source->as.insert_stmt.columns, &destination->as.insert_stmt.columns)) {
+        free_statement(destination);
+        return 0;
+    }
+
+    destination->as.insert_stmt.value_count = source->as.insert_stmt.value_count;
+    if (source->as.insert_stmt.value_count == 0) {
+        return 1;
+    }
+
+    destination->as.insert_stmt.values =
+        (Literal *)calloc(source->as.insert_stmt.value_count, sizeof(Literal));
+    if (destination->as.insert_stmt.values == NULL) {
+        free_statement(destination);
+        return 0;
+    }
+
+    for (index = 0; index < source->as.insert_stmt.value_count; ++index) {
+        destination->as.insert_stmt.values[index] =
+            clone_literal(&source->as.insert_stmt.values[index]);
+        if (destination->as.insert_stmt.values[index].text == NULL) {
+            free_statement(destination);
+            return 0;
+        }
+    }
+
+    return 1;
 }
 
 // "명령 세트(Statement)" 실행이 모두 끝났을 때 그것이 거미줄처럼 잡아먹고있던 동적 자원을 훑으며 구조적으로 회수해 주는 함수 구현부

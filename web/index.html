@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mini_sql Demo Console</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <main class="layout-grid">
+        <aside class="panel sidebar">
+          <div class="panel-header">
+            <h2>Schema Explorer</h2>
+          </div>
+          <div id="schema-tree" class="schema-tree"></div>
+
+          <div class="panel-header split">
+            <h2>Demo Presets</h2>
+          </div>
+          <div id="preset-list" class="preset-list"></div>
+        </aside>
+
+        <section class="panel workbench">
+          <div class="toolbar">
+            <div class="toolbar-group">
+              <button id="reset-demo" class="button button-ghost" type="button">Reset</button>
+              <button id="run-sql" class="button button-primary" type="button">Run SQL</button>
+            </div>
+          </div>
+
+          <div class="terminal-frame">
+            <div class="terminal-topbar">
+              <div class="traffic">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+            <div class="terminal-body">
+              <div class="prompt-line">mini_sql&gt;</div>
+              <textarea
+                id="sql-input"
+                spellcheck="false"
+                autocomplete="off"
+                placeholder="INSERT INTO users (name, id, age) VALUES ('Dave', 4, 28);"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="history-header">
+            <h2>CLI Output</h2>
+          </div>
+          <div id="console-history" class="console-history"></div>
+
+          <div class="history-header split">
+            <h2>Current Table Snapshot</h2>
+          </div>
+          <div id="table-snapshots" class="table-snapshots"></div>
+        </section>
+
+        <section class="panel inspector">
+          <div class="panel-header">
+            <h2>Pipeline Inspector</h2>
+          </div>
+          <div id="stage-cards" class="stage-cards"></div>
+
+          <div class="detail-card">
+            <div class="detail-header">
+              <h3 id="detail-title">Trace Details</h3>
+            </div>
+            <div id="detail-content" class="detail-content empty-state">
+              쿼리를 실행하면 여기서 tokens, statement, executor output 을 볼 수 있습니다.
+            </div>
+          </div>
+        </section>
+      </main>
+
+    </div>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

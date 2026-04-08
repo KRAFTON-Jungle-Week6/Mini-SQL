@@ -61,6 +61,7 @@ typedef struct {
 
 void free_literal(Literal *literal); // 사용이 다 끝난 뒤 Literal 구조체의 내부 메모리를 안전하게 비우고 돌려주는 함수 원형 선언
 Literal clone_literal(const Literal *literal); // 기존 Literal 구조체와 완벽히 분리된 복제본을 똑같이 깊은 복사하여 찍어내는 함수 원형 선언
+int clone_statement(const Statement *source, Statement *destination); // 디버그/트레이스 등에 쓰기 좋게 Statement 전체를 깊은 복사하는 함수 원형 선언
 void free_statement(Statement *statement); // 명령 세트인 Statement 전체 구조의 메모리를, 하위 트리들을 재귀적으로 돌며 모두 깨끗하게 지워주는 함수 원형 선언
 
 #endif // AST_H 가드를 닫음

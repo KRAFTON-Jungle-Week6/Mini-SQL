@@ -96,6 +96,24 @@ mini_sql/
     └── select_where.sql
 ```
 
+## 웹 데모 실행
+
+프리셋 버튼과 CLI 스타일 입력창으로 `SELECT`, `INSERT` 를 실행하고, 각 단계에서 만들어지는 토큰/statement/executor 결과를 시각적으로 보고 싶다면 아래처럼 실행합니다.
+
+```bash
+make
+python3 tools/demo_server.py
+```
+
+서버가 뜨면 브라우저에서 `http://127.0.0.1:8000` 을 열면 됩니다.
+
+- 좌측: 현재 테이블 스키마와 데모 프리셋
+- 중앙: CLI 느낌의 SQL 입력창과 실행 로그
+- 우측: `tokenize_sql()`, `parse_statement()`, `optimize_statement()`, `execute_statement()` 단계별 시각화
+- 하단: 현재 `data` 스냅샷 미리보기
+
+데모 서버는 실제 원본 `data/` 디렉터리를 직접 수정하지 않고, 실행 시 복제한 임시 작업공간에서만 데이터를 변경합니다.
+
 ## 단계별 학습 가이드라인
 
 아래 순서대로 보면 가장 이해하기 쉽습니다.
