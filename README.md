@@ -1,6 +1,6 @@
 # mini_sql
 
-학습용 최소 SQL 처리기입니다. 목표는 완전한 DBMS가 아니라, 작은 범위의 SQL을 직접 파싱하고 AST로 표현한 뒤, optimizer와 executor를 분리해서 이해하는 것입니다.
+c언어를 활용한 SQL 처리기입니다. 목표는 완전한 DBMS가 아니라, 작은 범위의 SQL을 직접 파싱하고 AST로 표현한 뒤, optimizer와 executor를 분리해서 이해하는 것입니다.
 
 현재 버전은 의도적으로 `AST-only` 구조를 사용합니다.
 
